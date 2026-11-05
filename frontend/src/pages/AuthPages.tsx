@@ -11,7 +11,7 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  if (user) return <Navigate to="/property" replace />;
+  if (user) return <Navigate to="/home" replace />;
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -70,7 +70,7 @@ export function Register() {
     <Shell>
       <section className="page-pad stack">
         <h1>Create account</h1>
-        <p className="muted">Landlord accounts manage properties and tenancies. Tenants sign reports from a link.</p>
+        <p className="muted">This form is for landlords. Tenants create an account from the link their landlord sends.</p>
         <form className="card stack" onSubmit={submit}>
           <label>Name<input required value={form.full_name} onChange={(e) => set('full_name', e.target.value)} /></label>
           <label>Email<input type="email" required value={form.email} onChange={(e) => set('email', e.target.value)} /></label>

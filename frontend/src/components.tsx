@@ -1,11 +1,25 @@
-import { FormEvent, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { api } from './api';
 import { useAuth } from './auth';
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMenuOpen(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   async function logout() {
     await api('/api/auth/logout/', { method: 'POST' });
@@ -16,29 +30,47 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header className="top">
-        <div className="wrap top-inner">
+        <div className="top-bar">
+          <div className="wrap top-inner">
           <Link className="brand" to={user ? '/home' : '/'}>
-            <img src="/icon-192.png" alt="" width="36" height="36" />
-            <span>
-              By the Book
-              <span>Rental records</span>
-            </span>
+            <img src="/icon-192.png" alt="" width="32" height="32" />
+            <span className="brand-name">By the Book</span>
+            <span className="brand-app">Rental records</span>
           </Link>
-          <nav>
+          <button
+            className="menu-button"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="site-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className="menu-icon" />
+            <span className="visually-hidden">{menuOpen ? 'Close menu' : 'Open menu'}</span>
+          </button>
+          <nav id="site-nav" className={menuOpen ? 'is-open' : undefined} onClick={() => setMenuOpen(false)}>
             {user ? (
-              <>
-                <Link to="/home">Home</Link>
-                <Link to="/property">Properties</Link>
-                <Link to="/account">Account</Link>
-                <button className="text-button" type="button" onClick={() => void logout()}>Sign out</button>
-              </>
+              user.role === 'tenant' ? (
+                <>
+                  <NavLink to="/home">Home</NavLink>
+                  <NavLink to="/account">Account</NavLink>
+                  <button className="text-button" type="button" onClick={() => void logout()}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/home">Home</NavLink>
+                  <NavLink to="/property">Properties</NavLink>
+                  <NavLink to="/account">Account</NavLink>
+                  <button className="text-button" type="button" onClick={() => void logout()}>Sign out</button>
+                </>
+              )
             ) : (
               <>
-                <Link to="/login">Sign in</Link>
-                <Link to="/register">Create account</Link>
+                <NavLink to="/login">Sign in</NavLink>
+                <NavLink to="/register">Create account</NavLink>
               </>
             )}
           </nav>
+          </div>
         </div>
       </header>
       <div className="wrap">{children}</div>

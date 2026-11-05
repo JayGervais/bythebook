@@ -5,9 +5,17 @@ import { Login, Register } from './pages/AuthPages';
 import { HomePage } from './pages/HomePage';
 import { InspectionPage } from './pages/InspectionPage';
 import { InvitePage } from './pages/InvitePage';
+import { JoinPage } from './pages/JoinPage';
 import { Landing } from './pages/Landing';
 import { PropertyPage } from './pages/PropertyPage';
 import { NewTenancy, TenancyDetail } from './pages/TenancyPage';
+import { TenantHome } from './pages/TenantHome';
+import { useAuth } from './auth';
+
+function HomeGate() {
+  const { user } = useAuth();
+  return user?.role === 'tenant' ? <TenantHome /> : <HomePage />;
+}
 
 export default function App() {
   return (
@@ -17,8 +25,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/invite/:token" element={<InvitePage />} />
+      <Route path="/join/:token" element={<JoinPage />} />
       <Route element={<RequireAuth />}>
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/home" element={<HomeGate />} />
         <Route path="/property" element={<PropertyPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/tenancies/new" element={<NewTenancy />} />

@@ -2,20 +2,23 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export const colors = {
-  canvas: '#f4f5f7',
+  canvas: '#f5f5f7',
   card: '#ffffff',
-  ink: '#12141a',
-  muted: '#667085',
-  line: '#e6e8ee',
-  accent: '#0f8f5b',
-  accentDeep: '#0c6b44',
-  accentSoft: '#ecfdf3',
-  amber: '#b45309',
-  amberSoft: '#fffaeb',
-  tide: '#0e7490',
-  tideSoft: '#ecfeff',
-  danger: '#b42318',
-  dangerBg: '#fef3f2',
+  ink: '#1d1d1f',
+  muted: '#6e6e73',
+  line: '#d2d2d7',
+  accent: '#3e6b5a',
+  accentDeep: '#345c4d',
+  accentSoft: 'rgba(62, 107, 90, 0.10)',
+  brand: '#7a6e62',
+  brandStrong: '#65594f',
+  brandSoft: 'rgba(122, 110, 98, 0.14)',
+  amber: '#8f5e45',
+  amberSoft: 'rgba(143, 94, 69, 0.12)',
+  tide: '#4d6570',
+  tideSoft: 'rgba(77, 101, 112, 0.12)',
+  danger: '#b3261e',
+  dangerBg: 'rgba(179, 38, 30, 0.06)',
 };
 
 export function Screen({ children }: { children: React.ReactNode }) {
@@ -69,10 +72,10 @@ export function ErrorText({ children }: { children: string }) {
 }
 
 const shadow = {
-  shadowColor: '#12141a',
-  shadowOpacity: 0.05,
+  shadowColor: '#7a6e62',
+  shadowOpacity: 0.18,
   shadowRadius: 16,
-  shadowOffset: { width: 0, height: 8 },
+  shadowOffset: { width: 0, height: 6 },
   elevation: 2,
 };
 
@@ -93,22 +96,20 @@ const styles = StyleSheet.create({
   inputFocused: { borderColor: colors.accent, borderWidth: 1.5 },
   button: {
     backgroundColor: colors.accent,
-    borderRadius: 10,
+    borderRadius: 980,
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
   },
   secondary: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line },
-  buttonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  buttonText: { color: '#fff', fontSize: 15, fontWeight: '500' },
   secondaryText: { color: colors.ink },
   card: {
     backgroundColor: colors.card,
-    borderRadius: 18,
+    borderRadius: 0,
     padding: 16,
     gap: 8,
-    borderWidth: 1,
-    borderColor: colors.line,
     ...shadow,
   },
   error: { backgroundColor: colors.dangerBg, color: colors.danger, padding: 12, borderRadius: 12 },

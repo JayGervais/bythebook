@@ -39,9 +39,9 @@ export function LoginScreen({ navigation }: NativeStackScreenProps<RootParamList
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.canvas, padding: 24, gap: 14, justifyContent: 'center' },
-  mark: { width: 72, height: 72, borderRadius: 20 },
-  kicker: { color: colors.accentDeep, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: '700' },
+  mark: { width: 72, height: 72, borderRadius: 0 },
+  kicker: { color: colors.brandStrong, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: '600' },
   title: { fontSize: 34, fontWeight: '700', color: colors.ink, letterSpacing: -0.5 },
   lede: { color: colors.muted, fontSize: 16, lineHeight: 23 },
-  link: { color: colors.accentDeep, fontSize: 15, fontWeight: '700' },
+  link: { color: colors.accent, fontSize: 15, fontWeight: '600' },
 });

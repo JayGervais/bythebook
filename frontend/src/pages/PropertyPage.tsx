@@ -10,6 +10,13 @@ const TYPES = [
   ['condo', 'Condo'],
 ];
 
+type TenantDraft = { name: string; email: string; phone: string };
+type AccountLink = { name: string; email: string; path: string };
+
+function blankTenant(): TenantDraft {
+  return { name: '', email: '', phone: '' };
+}
+
 export function PropertyPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [error, setError] = useState('');
@@ -18,6 +25,9 @@ export function PropertyPage() {
   });
   const [unitLabels, setUnitLabels] = useState<Record<string, string>>({});
   const [busyProperty, setBusyProperty] = useState<string | null>(null);
+  const [tenantDrafts, setTenantDrafts] = useState<Record<string, TenantDraft[]>>({});
+  const [notice, setNotice] = useState('');
+  const [accountLinks, setAccountLinks] = useState<AccountLink[]>([]);
 
   async function load() {
     setProperties(await api<Property[]>('/api/properties/'));
@@ -67,12 +77,79 @@ export function PropertyPage() {
     }
   }
 
+  function draftsFor(unitId: string) {
+    return tenantDrafts[unitId]?.length ? tenantDrafts[unitId] : [blankTenant()];
+  }
+
+  function updateDraft(unitId: string, index: number, key: keyof TenantDraft, value: string) {
+    setTenantDrafts((current) => {
+      const rows = [...(current[unitId]?.length ? current[unitId] : [blankTenant()])];
+      rows[index] = { ...rows[index], [key]: value };
+      return { ...current, [unitId]: rows };
+    });
+  }
+
+  function addDraft(unitId: string) {
+    setTenantDrafts((current) => ({
+      ...current,
+      [unitId]: [...(current[unitId]?.length ? current[unitId] : [blankTenant()]), blankTenant()],
+    }));
+  }
+
+  function removeDraft(unitId: string, index: number) {
+    setTenantDrafts((current) => {
+      const rows = (current[unitId]?.length ? current[unitId] : [blankTenant()]).filter((_, row) => row !== index);
+      return { ...current, [unitId]: rows.length ? rows : [blankTenant()] };
+    });
+  }
+
+  async function refreshLink(tenantId: string) {
+    setError('');
+    setNotice('');
+    try {
+      const result = await api<AccountLink & { emailed: boolean }>(`/api/tenants/${tenantId}/account-link/`, { method: 'POST' });
+      setAccountLinks([{ name: result.name, email: result.email, path: result.path }]);
+      setNotice(result.emailed
+        ? 'The account link was emailed. It is also shown below.'
+        : 'Share this link so they can create an account.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not make an account link.');
+    }
+  }
+
+  async function addTenants(event: FormEvent, tenancyId: string, unitId: string) {
+    event.preventDefault();
+    setError('');
+    setNotice('');
+    const tenants = draftsFor(unitId);
+    try {
+      const created = await api<{ tenants: { name: string; email: string; account_path: string }[] }>('/api/tenancies/' + tenancyId + '/tenants/', {
+        method: 'POST',
+        body: JSON.stringify({ tenants }),
+      });
+      setTenantDrafts((current) => ({ ...current, [unitId]: [blankTenant()] }));
+      setAccountLinks(created.tenants.map((tenant) => ({ name: tenant.name, email: tenant.email, path: tenant.account_path })));
+      setNotice('Share each link. The tenant creates their own account before they can sign in.');
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not add the tenants.');
+    }
+  }
+
   return (
     <Shell>
       <section className="page-pad stack">
         <h1>Properties</h1>
-        <p className="muted">Add a property and the units you rent.</p>
+        <p className="muted">Add a property, the units you rent, and a tenant account for messages and reminders.</p>
         {error && <p className="error">{error}</p>}
+        {notice && <p className="ok">{notice}</p>}
+        {accountLinks.length > 0 && (
+          <div className="card stack">
+            {accountLinks.map((link) => (
+              <p key={link.path}>{link.name} · {link.email} · <a href={link.path}>{link.path}</a></p>
+            ))}
+          </div>
+        )}
         {properties.map((property) => (
           <article className="card stack" key={property.id}>
             <h2>{property.street_address}</h2>
@@ -86,6 +163,41 @@ export function PropertyPage() {
                     <button className="button quiet" type="button" onClick={() => void markDone(task.id)}>Done</button>
                   </div>
                 ))}
+                {(unit.tenants || []).map((tenant) => (
+                  <div className="row spread" key={tenant.id}>
+                    <span>{tenant.name}{tenant.email ? ` · ${tenant.email}` : ''} · {tenant.has_account ? 'Account ready' : 'Needs an account'}</span>
+                    {!tenant.has_account && (
+                      <button className="button secondary" type="button" onClick={() => void refreshLink(tenant.id)}>Account link</button>
+                    )}
+                  </div>
+                ))}
+                {unit.current_tenancy_id ? (
+                  <form className="stack" onSubmit={(event) => void addTenants(event, unit.current_tenancy_id as string, unit.id)}>
+                    <h3>Add tenants</h3>
+                    <p className="muted">Add everyone on this tenancy. Each person gets a link to create their own account for messages and reminders.</p>
+                    {draftsFor(unit.id).map((draft, index) => (
+                      <div className="stack" key={`${unit.id}-${index}`}>
+                        <div className="row spread">
+                          <strong>Tenant {index + 1}</strong>
+                          {draftsFor(unit.id).length > 1 && (
+                            <button className="button quiet" type="button" onClick={() => removeDraft(unit.id, index)}>Remove</button>
+                          )}
+                        </div>
+                        <label>Name<input required value={draft.name} onChange={(e) => updateDraft(unit.id, index, 'name', e.target.value)} /></label>
+                        <div className="grid-2">
+                          <label>Email<input type="email" required value={draft.email} onChange={(e) => updateDraft(unit.id, index, 'email', e.target.value)} /></label>
+                          <label>Phone<input value={draft.phone} onChange={(e) => updateDraft(unit.id, index, 'phone', e.target.value)} /></label>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="row">
+                      <button className="button secondary" type="button" onClick={() => addDraft(unit.id)}>Add another tenant</button>
+                      <button className="button" type="submit">Save tenants</button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="muted">Start a tenancy for this unit before adding a tenant.</p>
+                )}
               </div>
             ))}
             <form className="row" onSubmit={(event) => void addUnit(event, property.id)}>

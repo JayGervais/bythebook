@@ -8,6 +8,7 @@ export function NewTenancy() {
   const params = new URLSearchParams(window.location.search);
   const preset = params.get('unit') || '';
   const [units, setUnits] = useState<{ id: string; label: string; address: string }[]>([]);
+  const [people, setPeople] = useState([{ name: '', email: '', phone: '' }]);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
     unit_id: preset,
@@ -16,9 +17,6 @@ export function NewTenancy() {
     rent_amount: '',
     rent_due_day: '1',
     period: 'monthly',
-    tenant_name: '',
-    tenant_email: '',
-    tenant_phone: '',
     deposit_amount: '',
     deposit_received_on: '',
   });
@@ -50,7 +48,7 @@ export function NewTenancy() {
           rent_amount: form.rent_amount,
           rent_due_day: Number(form.rent_due_day),
           period: form.period,
-          tenants: [{ name: form.tenant_name, email: form.tenant_email, phone: form.tenant_phone }],
+          tenants: people,
           deposit_amount: form.deposit_amount || null,
           deposit_received_on: form.deposit_received_on || null,
         }),
@@ -90,11 +88,22 @@ export function NewTenancy() {
             </select>
           </label>
           {form.period === 'fixed' && <p className="muted">A fixed term ends on the move-out date. It does not need a notice to end, and the rent stays the same for the term.</p>}
-          <label>Tenant name<input required value={form.tenant_name} onChange={(e) => setForm({ ...form, tenant_name: e.target.value })} /></label>
-          <div className="grid-2">
-            <label>Tenant email<input type="email" value={form.tenant_email} onChange={(e) => setForm({ ...form, tenant_email: e.target.value })} /></label>
-            <label>Tenant phone<input value={form.tenant_phone} onChange={(e) => setForm({ ...form, tenant_phone: e.target.value })} /></label>
-          </div>
+          {people.map((person, index) => (
+            <div className="stack" key={index}>
+              <div className="row spread">
+                <strong>Tenant {index + 1}</strong>
+                {people.length > 1 && (
+                  <button className="button quiet" type="button" onClick={() => setPeople((rows) => rows.filter((_, row) => row !== index))}>Remove</button>
+                )}
+              </div>
+              <label>Name<input required value={person.name} onChange={(e) => setPeople((rows) => rows.map((row, i) => i === index ? { ...row, name: e.target.value } : row))} /></label>
+              <div className="grid-2">
+                <label>Email<input type="email" value={person.email} onChange={(e) => setPeople((rows) => rows.map((row, i) => i === index ? { ...row, email: e.target.value } : row))} /></label>
+                <label>Phone<input value={person.phone} onChange={(e) => setPeople((rows) => rows.map((row, i) => i === index ? { ...row, phone: e.target.value } : row))} /></label>
+              </div>
+            </div>
+          ))}
+          <button className="button secondary" type="button" onClick={() => setPeople((rows) => [...rows, { name: '', email: '', phone: '' }])}>Add another tenant</button>
           <div className="grid-2">
             <label>Deposit amount<input inputMode="decimal" value={form.deposit_amount} onChange={(e) => setForm({ ...form, deposit_amount: e.target.value })} /></label>
             <label>Date received<input type="date" value={form.deposit_received_on} onChange={(e) => setForm({ ...form, deposit_received_on: e.target.value })} /></label>
@@ -237,7 +246,7 @@ export function TenancyDetail() {
           <h2>Tenants</h2>
           {tenancy.tenants.map((tenant) => (
             <div key={tenant.id} className="row">
-              <span>{tenant.name} {tenant.email && <span className="muted">· {tenant.email}</span>}</span>
+              <span>{tenant.name} {tenant.email && <span className="muted">· {tenant.email}</span>} · {tenant.has_account ? 'Account ready' : 'No account yet'}</span>
               <button className="button secondary" type="button" onClick={() => void invite(tenant.id)}>Create signing link</button>
             </div>
           ))}

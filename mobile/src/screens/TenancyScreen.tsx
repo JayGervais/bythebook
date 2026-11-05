@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', color: colors.ink, letterSpacing: -0.4 },
   summary: { color: colors.ink, lineHeight: 22 },
   rent: { color: colors.accentDeep, fontWeight: '700' },
-  deposit: { alignSelf: 'flex-start', backgroundColor: colors.accentSoft, color: colors.accentDeep, overflow: 'hidden', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, fontWeight: '700' },
+  deposit: { alignSelf: 'flex-start', backgroundColor: colors.brandSoft, color: colors.brandStrong, overflow: 'hidden', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, fontWeight: '600' },
   heading: { fontSize: 17, fontWeight: '700', color: colors.ink },
   muted: { color: colors.muted, lineHeight: 20 },
   link: { fontSize: 16, color: colors.accentDeep, fontWeight: '700' },

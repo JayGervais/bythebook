@@ -8,6 +8,7 @@ export type User = {
   full_name: string;
   phone: string;
   address_for_service: string;
+  role?: 'landlord' | 'tenant';
   token?: string;
 };
 

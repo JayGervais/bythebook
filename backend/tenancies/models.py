@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -57,8 +58,17 @@ class Tenant(models.Model):
     name = models.CharField(max_length=200)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=32, blank=True)
+    account = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='tenant_record',
+    )
     invite_token_hash = models.CharField(max_length=64, blank=True, db_index=True)
     invite_expires_at = models.DateTimeField(null=True, blank=True)
+    account_token_hash = models.CharField(max_length=64, blank=True, db_index=True)
+    account_token_expires_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name

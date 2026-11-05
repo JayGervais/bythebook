@@ -23,13 +23,18 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    """Landlord account. Tenants do not get a user record."""
+    """A landlord manages properties. A tenant signs in for messages and reminders."""
+
+    class Role(models.TextChoices):
+        LANDLORD = 'landlord', 'Landlord'
+        TENANT = 'tenant', 'Tenant'
 
     username = None
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=200)
     phone = models.CharField(max_length=32, blank=True)
     address_for_service = models.TextField(blank=True)
+    role = models.CharField(max_length=16, choices=Role.choices, default=Role.LANDLORD)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

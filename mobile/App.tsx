@@ -13,6 +13,7 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { PropertiesScreen } from './src/screens/PropertiesScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { TenancyScreen } from './src/screens/TenancyScreen';
+import { TenantHomeScreen } from './src/screens/TenantHomeScreen';
 
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -44,7 +45,7 @@ function Routes() {
     }}>
       {user ? (
         <>
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'By the Book' }} />
+          <Stack.Screen name="Home" component={user.role === 'tenant' ? TenantHomeScreen : HomeScreen} options={{ title: 'By the Book' }} />
           <Stack.Screen name="Properties" component={PropertiesScreen} options={{ title: 'Properties' }} />
           <Stack.Screen name="Account" component={AccountScreen} options={{ title: 'Account' }} />
           <Stack.Screen name="Tenancy" component={TenancyScreen} options={{ title: 'Tenancy' }} />

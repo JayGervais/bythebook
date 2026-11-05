@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootParamList } from '../navigation';
+import { useAuth } from '../auth';
 import { colors } from '../ui';
 
 const items: { key: 'Home' | 'Properties' | 'Account'; label: string }[] = [
@@ -12,10 +13,12 @@ const items: { key: 'Home' | 'Properties' | 'Account'; label: string }[] = [
 
 export function Tabs({ active }: { active: 'Home' | 'Properties' | 'Account' }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootParamList>>();
+  const { user } = useAuth();
+  const shown = user?.role === 'tenant' ? items.filter((item) => item.key !== 'Properties') : items;
   return (
     <View style={styles.bar}>
       <View style={styles.inner}>
-        {items.map((item) => (
+        {shown.map((item) => (
           <Pressable accessibilityRole="button" key={item.key} onPress={() => navigation.navigate(item.key)} style={[styles.item, active === item.key && styles.itemOn]}>
             <Text style={[styles.label, active === item.key && styles.on]}>{item.label}</Text>
           </Pressable>
@@ -26,10 +29,17 @@ export function Tabs({ active }: { active: 'Home' | 'Properties' | 'Account' }) 
 }
 
 const styles = StyleSheet.create({
-  bar: { backgroundColor: colors.canvas, paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12 },
-  inner: { flexDirection: 'row', backgroundColor: '#eef0f3', borderRadius: 14, padding: 4 },
-  item: { flex: 1, minHeight: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },
-  itemOn: { backgroundColor: colors.card, shadowColor: '#12141a', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
-  label: { color: colors.muted, fontSize: 13, fontWeight: '600' },
-  on: { color: colors.ink },
+  bar: { backgroundColor: 'transparent', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 14 },
+  inner: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 20,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(122, 110, 98, 0.28)',
+  },
+  item: { flex: 1, minHeight: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 16 },
+  itemOn: { backgroundColor: colors.brandSoft },
+  label: { color: colors.ink, fontSize: 13, fontWeight: '500' },
+  on: { color: colors.brandStrong, fontWeight: '600' },
 });

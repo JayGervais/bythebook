@@ -13,17 +13,21 @@ from tenancies.models import Tenancy, Tenant
 
 class TenantSerializer(serializers.ModelSerializer):
     invite_active = serializers.SerializerMethodField()
+    has_account = serializers.SerializerMethodField()
     email = serializers.EmailField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Tenant
-        fields = ('id', 'name', 'email', 'phone', 'invite_expires_at', 'invite_active')
-        read_only_fields = ('id', 'invite_expires_at', 'invite_active')
+        fields = ('id', 'name', 'email', 'phone', 'invite_expires_at', 'invite_active', 'has_account')
+        read_only_fields = ('id', 'invite_expires_at', 'invite_active', 'has_account')
 
     def get_invite_active(self, obj):
         from django.utils import timezone
         return bool(obj.invite_expires_at and obj.invite_expires_at >= timezone.now())
+
+    def get_has_account(self, obj):
+        return obj.account_id is not None
 
 
 class ReminderSerializer(serializers.ModelSerializer):

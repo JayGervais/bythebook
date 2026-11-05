@@ -7,8 +7,8 @@ from accounts.models import User, WaitlistSignup
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'full_name', 'phone', 'address_for_service')
-        read_only_fields = ('id', 'email')
+        fields = ('id', 'email', 'full_name', 'phone', 'address_for_service', 'role')
+        read_only_fields = ('id', 'email', 'role')
 
 
 class RegisterSerializer(serializers.ModelSerializer):

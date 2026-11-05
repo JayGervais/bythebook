@@ -4,17 +4,37 @@ from properties.models import Property, Unit
 from properties.rooms import DEFAULT_ROOMS
 
 
+def _current_tenancy(unit):
+    open_rows = [row for row in unit.tenancies.all() if row.status != 'ended']
+    if not open_rows:
+        return None
+    return max(open_rows, key=lambda row: (row.start_date, row.created_at))
+
+
 class UnitSerializer(serializers.ModelSerializer):
     tasks = serializers.SerializerMethodField()
+    current_tenancy_id = serializers.SerializerMethodField()
+    tenants = serializers.SerializerMethodField()
 
     class Meta:
         model = Unit
-        fields = ('id', 'property', 'label', 'rooms_template', 'tasks')
-        read_only_fields = ('id', 'tasks')
+        fields = ('id', 'property', 'label', 'rooms_template', 'tasks', 'current_tenancy_id', 'tenants')
+        read_only_fields = ('id', 'tasks', 'current_tenancy_id', 'tenants')
 
     def get_tasks(self, obj):
         from records.serializers import MaintenanceTaskSerializer
         return MaintenanceTaskSerializer(obj.tasks.all(), many=True).data
+
+    def get_current_tenancy_id(self, obj):
+        tenancy = _current_tenancy(obj)
+        return str(tenancy.id) if tenancy else None
+
+    def get_tenants(self, obj):
+        tenancy = _current_tenancy(obj)
+        if tenancy is None:
+            return []
+        from tenancies.serializers import TenantSerializer
+        return TenantSerializer(tenancy.tenants.all(), many=True).data
 
     def validate_property(self, prop):
         request = self.context['request']

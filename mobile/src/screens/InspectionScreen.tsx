@@ -92,14 +92,14 @@ export function InspectionScreen({ route }: NativeStackScreenProps<RootParamList
 const styles = StyleSheet.create({
   page: { padding: 20, gap: 14, backgroundColor: colors.canvas },
   title: { fontSize: 26, fontWeight: '700', color: colors.ink },
-  heading: { fontSize: 18, fontWeight: '700', color: colors.accentDeep },
+  heading: { fontSize: 18, fontWeight: '600', color: colors.ink },
   muted: { color: colors.muted, lineHeight: 20 },
   saved: { color: colors.accentDeep, fontWeight: '700' },
   item: { gap: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.line },
   itemName: { fontSize: 16, color: colors.ink, fontWeight: '600' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderWidth: 1, borderColor: colors.line, backgroundColor: colors.canvas, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8 },
-  chipOn: { backgroundColor: colors.accent, borderColor: colors.accent },
+  chipOn: { backgroundColor: colors.brandSoft, borderColor: 'transparent' },
   chipText: { color: colors.ink, fontSize: 13, fontWeight: '600' },
-  chipTextOn: { color: '#fff' },
+  chipTextOn: { color: colors.brandStrong },
 });

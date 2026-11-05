@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
   page: { flex: 1, padding: 20, gap: 16 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   identityText: { flex: 1, gap: 2 },
-  avatar: { width: 48, height: 48, borderRadius: 16, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.accentDeep, fontSize: 20, fontWeight: '700' },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brandSoft, borderWidth: 1, borderColor: colors.brand, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: colors.brandStrong, fontSize: 20, fontWeight: '600' },
   heading: { fontSize: 20, fontWeight: '700', color: colors.ink },
   muted: { color: colors.muted, lineHeight: 20 },
 });

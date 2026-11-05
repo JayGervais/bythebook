@@ -4,6 +4,7 @@ export type User = {
   full_name: string;
   phone: string;
   address_for_service: string;
+  role: 'landlord' | 'tenant';
 };
 
 export type Unit = {
@@ -12,6 +13,8 @@ export type Unit = {
   label: string;
   rooms_template: { room: string; items: string[] }[];
   tasks?: MaintenanceTask[];
+  current_tenancy_id?: string | null;
+  tenants?: Tenant[];
 };
 
 export type MaintenanceTask = {
@@ -87,6 +90,7 @@ export type Tenant = {
   phone: string;
   invite_expires_at: string | null;
   invite_active: boolean;
+  has_account?: boolean;
 };
 
 export type Reminder = {

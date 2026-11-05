@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'By the Book',
         short_name: 'By the Book',
         description: 'Inspection reports and security deposit records for Alberta rental properties.',
-        theme_color: '#1B7A4B',
-        background_color: '#f3f6f4',
+        theme_color: '#3e6b5a',
+        background_color: '#f5f5f7',
         display: 'standalone',
         start_url: '/',
         icons: [
